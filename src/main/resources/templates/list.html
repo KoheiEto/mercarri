@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- css -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" 
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="./mercari.css"/>
+  <!-- script -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+     <script type="text/javascript">
+  
+//子カテゴリ自動生成
+	
+	    $(function () {
+	    	 $('.parent').change(function() {
+	    		 
+	    	     /* console.log("ok"); */
+	    		 var parent =  $('.parent').val();
+	    		 var child = $('.child').val();
+	    	     
+	    		
+	    		
+	    		 $.ajax({
+	    			 /* console.log("ok"); */
+	    			/*  data: { searchName: $('#searchName').val() }, */
+		  				url: '/ajax/setUpCategoryName',
+		  				data: {
+		  					parentName:  $('.parent').val()
+		  				},
+		  				dataType: 'json'
+		  			})
+		  				 .done(function(childList) {
+		  					
+		  					$('select#area option').remove();
+		  					$('select#area').prepend("<option value=''></option>");
+	
+		  					
+		  					
+		  					/* var a = $('<option>', aa);  //要素を生成
+		  				    $('#select#area').append(a);  //セレクトボックスに追加 */
+		  					
+		  				/* 	$('#select#area').append($('<option>')); */
+		  					
+		  				
+		  					for (const child of childList) {
+		  						
+		  						
+		  						$('select#area').append($('<option>').html(child).val(child));		
+		  						
+		  					}
+		  					/* $('#select#area').append($('<option>'));  */
+		  					
+		  				}) 
+		  				
+		  					
+		  				  
+		  				 
+		  				
+		  				
+		  				/* .done(function(list) {
+		  					
+		  					$('select#area option').remove();
+		  					$('select#air option').remove();
+		  					
+		  					for (const li of list) {
+		  						
+		  						for (const child of clist) {
+		  							$('select#area').append($('<option>').html(child).val(child));
+		  						}
+		  						for (const grand of glist) {
+		  							$('select#air').append($('<option>').html(grand).val(grand));
+		  						}
+		  					}
+		  					
+		  					
+		  				}) */
+		  				
+		  				
+		  				
+			
+		  				
+		  				
+		  				
+	    	 });    	
+	    	
+	    	 
+	    });
+	    
+	    console.log($('.child').val());
+	    
+	    
+	    //孫カテゴリ自動生成
+	    $(function () {
+	    	$('.child').change(function() {
+	    		var child = $('.child').val();
+	    		
+	    		$.ajax({
+	    			url: '/ajax/setUpGrandChildCategoryName',
+	    			data: {childName: child},
+	    			dataType: 'json'
+	    		})
+	    			.done(function(grandChildList) {
+	    				$('select#air option').remove();
+	    				$('select#air').prepend("<option value=''></option>");
+	    				
+	    				for(const grandChild of grandChildList) {
+	    					$('select#air').append($('<option>').html(grandChild).val(grandChild));
+	    				}
+	    			})
+	    		
+	    	});
+	    });
+	  
+
+  </script>
+    
+    
+  <title>Rakus Items</title>
+</head>
+<body>
+  <!-- navbar -->
+  <nav class="navbar navbar-inverse">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="./list.html">Rakus Items</a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="logout" href="./login.html" th:href="@{/logout}">Logout <i class="fa fa-power-off"></i></a></li>
+        </ul>
+        <p class="navbar-text navbar-right">
+          <!-- <span id="loginName">user: userName</span> -->
+          <span sec:authorize="isAuthenticated()">
+              <span sec:authentication="principal.user.mailAddress">userName</span>
+           </span>
+        </p>
+        <a class="navbar-text navbar-right" th:href="@{/register}">
+          <span id="UserRegister">user register</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div id="main" class="container-fluid">
+    <!-- addItem link -->
+    <div id="addItemButton">
+      <a class="btn btn-default" th:href="@{/add}" href="./add.html"><i class="fa fa-plus-square-o"></i> Add New Item</a>
+    </div>
+
+    <!-- 検索フォーム -->
+    <div id="forms">
+      <form th:action="@{/}" method="post" class="form-inline" role="form" th:object="${searchForm}">
+        <div class="form-group">
+          <input type="input" class="form-control" id="name" placeholder="item name"/ name="name">
+          <!-- <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red">error:may not be empty</span> -->
+        </div>
+        <div class="form-group"><i class="fa fa-plus"></i></div>
+        
+        
+        
+        
+        
+        
+        <div class="form-group">
+            <select class="form-control parent" name="parentCategoryName">
+              <option value=""></option>
+              <option th:each = "categorie : ${categories}"   th:text="${categorie.name}">parentCategory</option> <!-- th:value="${categorie.name}"  --><!-- th:selected="${categorie.name == parentName}" -->
+            </select>
+            <!-- <span class="text-danger" th:if="${#fields.hasErrors('parentCategoryName')}" th:errors="*{parentCategoryName}" style="color:red">error:may not be empty</span> -->
+          
+          <select class="form-control child" id="area" name="childCategoryName">  
+          	  <option value=""></option>            
+              <option th:each = "childName : ${childNameListList1}" th:text="${childName}">parentCategory</option> <!-- th:selected="${childName == childName1}" -->              
+            </select>
+            <!-- <span class="text-danger" th:if="${#fields.hasErrors('childCategoryName')}" th:errors="*{childCategoryName}" style="color:red">error:may not be empty</span> -->
+           <select class="form-control" id="air" name="grandchildCategoryName">
+              <option value=""></option>
+              <option th:each = "grandChildName : ${grandChildNameListList1}"   th:text="${grandChildName}">parentCategory</option> <!-- th:selected="${grandChildName == grandChildName1}" -->
+            </select>
+            <!-- <span class="text-danger" th:if="${#fields.hasErrors('grandchildCategoryName')}" th:errors="*{grandchildCategoryName}" style="color:red">error:may not be empty</span> -->
+        </div>
+        <div class="form-group"><i class="fa fa-plus"></i></div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="brand"/ name="brand">
+          <!-- <span class="text-danger" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}" style="color:red">error:may not be empty</span> -->
+        </div>
+        <div class="form-group"></div>
+        <button type="submit" class="btn btn-default"><i class="fa fa-angle-double-right"></i> search</button>
+      </form>
+    </div>
+
+    <!-- pagination -->
+    <div class="pages">
+      <nav class="page-nav">
+        <ul class="pager">
+          <li class="previous"><a 
+          th:href="@{/(page=${page} - 1, name=${searchForm.name}, parentCategoryName=${searchForm.parentCategoryName}, childCategoryName=${searchForm.childCategoryName}, grandchildCategoryName=${searchForm.grandchildCategoryName}, brand=${searchForm.brand} )}">&larr; prev</a></li>
+          <li class="next"><a 
+          th:href="@{/(page=${page} + 1, name=${searchForm.name}, parentCategoryName=${searchForm.parentCategoryName}, childCategoryName=${searchForm.childCategoryName}, grandchildCategoryName=${searchForm.grandchildCategoryName}, brand=${searchForm.brand} )}">next &rarr;</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- table -->
+    <div class="table-responsive">
+      <table id="item-table" class="table table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>price</th>
+            <th>category</th>
+            <th>brand</th>
+            <th>cond</th>
+          </tr>
+        </thead>
+        <tbody><!-- th:href="@{'showDetail?id=' + ${item.id}}" -->
+        <!-- <span th:each="linka : ${parentlinkName}" > -->
+          <tr th:each="item : ${itemCategoryJoins}"><!-- th:object="${item}" -->
+            <!-- <span th:each="linka : ${parentlinkName}"> -->
+            <span th:each="i : ${item}" > <!-- <span th:each="p : ${parentlinkName}"> -->
+            <td>
+             <a href="./detail.html" th:href="@{'/detail?id=' + *{i.id}}">
+              <span th:text="${i.name}" class="item-name">Razer BlackWidow Chroma Keyboard</span>
+             </a>
+            </td>
+            <td th:text="*{i.price}" class="item-price">52.0</td>
+            
+           <!-- <span th:each="i : ${item}" > -->
+           <td  class="item-category"><span th:text="*{i.nameAll}" class="item-category"></span> 
+           <!-- <a th:href="@{/(parentCategoryName)=*{i.parentlinkName}}">Electronics</a> --> <!-- th:href="@{/(parentCategoryName)=*{linka}}" -->/ <!-- <span th:text="${p}"> --><!-- <a href="" >Computers &amp; Tablets</a> -->  / <!-- <a href="">Components &amp; Parts</a> -->
+           </td>
+           <!--  </span> -->
+            <td class="item-brand"><a th:text="*{i.brand}" th:href="@{/(brand=*{i.brand})}">Razer</a></td>
+            <td th:text="*{i.condition}" class="item-condition">3</td>
+            </span>
+            <!-- </span> --><!-- </span> -->
+           <!-- th:href="@{/(childCategoryName)=*{linkb}}" -->
+          </tr>
+          <!-- </span> -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- pagination -->
+    <div class="pages">
+      <nav class="page-nav">
+        <ul class="pager">
+          <li class="previous"><a 
+          th:href="@{/(page=${page} - 1, name=${searchForm.name}, parentCategoryName=${searchForm.parentCategoryName}, childCategoryName=${searchForm.childCategoryName}, grandchildCategoryName=${searchForm.grandchildCategoryName}, brand=${searchForm.brand} )}">&larr; prev</a></li>
+          <li class="next"><a 
+          th:href="@{/(page=${page} + 1, name=${searchForm.name}, parentCategoryName=${searchForm.parentCategoryName}, childCategoryName=${searchForm.childCategoryName}, grandchildCategoryName=${searchForm.grandchildCategoryName}, brand=${searchForm.brand} )}">next &rarr;</a></li>
+        </ul>
+      </nav>
+      <!-- ページ番号を指定して表示するフォーム -->
+      <div id="select-page">
+       
+        <form class="form-inline" th:object="${searchForm}">
+          <div class="form-group">
+            <div class="input-group col-xs-6">
+              <label></label>
+              <input type="text" class="form-control" name="page" placeholder="page" />
+              <input type="hidden" th:field="*{name}" />
+              <input type="hidden" th:field="*{parentCategoryName}" />
+              <input type="hidden" th:field="*{childCategoryName}" />
+              <input type="hidden" th:field="*{grandchildCategoryName}" />
+              <input type="hidden" th:field="*{brand}" />
+              <!-- 総ページ数 -->
+              <div class="input-group-addon"><span th:text="${totalPage}"></span></div>
+            </div>
+            <div class="input-group col-xs-1">
+              <button type="submit" class="btn btn-default">Go</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
